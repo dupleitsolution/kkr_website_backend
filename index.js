@@ -5,7 +5,7 @@ const { default: mongoose } = require("mongoose");
 const cors = require("cors");
 // Create an instance of Express
 const app = express();
-const port = 3000;
+const port = 8000;
 app.use(cors());
 mongoose
   .connect(
@@ -16,7 +16,13 @@ mongoose
 
 app.use(express.json());
 app.use(router);
-
+app.use((req, res, next) => {
+  if (req.url === "/favicon.ico") {
+    res.status(204).send(); // Send an empty response for favicon requests
+  } else {
+    next(); // Pass control to other routes
+  }
+})
 const fuc = () => {
   console.log(`Server is running on port ${port}`);
 };

@@ -1,3 +1,4 @@
+const Joi = require("joi");
 const { validateTemple, Temple } = require("../models/temple");
 
 const express = require("express");
@@ -58,7 +59,16 @@ router.get("/:id", async (req, res) => {
   try {
     const id = req.params.id;
 
-    const fetch = await Temple.findOne({ id: id });
+    // Validate id parameter before using it
+    const schema = Joi.object({ id: Joi.number().required() });
+    const { error } = schema.validate({ id });
+
+    if (error) {
+      return res.status(400).send({ message: "Invalid temple ID" });
+    }
+    const criteria = {}
+    criteria.id = id
+    const fetch = await Temple.findOne(criteria);
 
     if (!fetch) {
       return res.status(404).send({
