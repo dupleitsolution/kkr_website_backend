@@ -1,51 +1,42 @@
 const mongoose = require("mongoose");
 const Joi = require("joi");
 
-const options = new mongoose.Schema({
-  virtualGuide: { type: String },
-  panormicView: { type: String },
-  threeDView: { type: String },
-  sightSeeing: { type: String },
-  NearBy: { type: String },
-  tourGuide: { type: String },
-  infoQuest: { type: String },
-});
+const optionSchema = new mongoose.Schema({
+  image: { type: String },
+  title: { type: String },
+  link: { type: String },
+}, { _id: false }); // Exclude _id field from the schema
 
-const temples = new mongoose.Schema({
+const templeSchema = new mongoose.Schema({
+  id: { type: Number },
   name: { type: String, default: "" },
-  about: { type: String },
-  map: { type: String },
-  event: { type: String },
-
-  option: [options],
+  about: { type: String, default: "" },
+  map: { type: String , default: ""},
+  event: { type: String, default: "" },
+  banner: { type: String , default: ""},
+  options: [optionSchema], // Defining options as an array of optionSchema objects
 });
 
-const Temple = mongoose.model("temple", temples);
+const Temple = mongoose.model("temple", templeSchema);
 
 // JOI Validation -------------------------
-
-const optionsSchema = Joi.object({
-  virtualGuide: Joi.string().required(),
-  panormicView: Joi.string().required(),
-  threeDView: Joi.string().required(),
-  sightSeeing: Joi.string().required(),
-  NearBy: Joi.string().required(),
-  tourGuide: Joi.string().required(),
-  infoQuest: Joi.string().required(),
+const optionSchemaJoi = Joi.object({
+  title: Joi.string().required(),
+  link: Joi.string().allow(""),
 });
 
 const validateTemple = (temple) => {
   const schema = Joi.object({
-    name: Joi.string().default("").required(),
-    about: Joi.string().required(),
-    map: Joi.string().required(),
-    event: Joi.string().required(),
-
-    option: Joi.array().items(optionsSchema.required()).required(),
+    id: Joi.number().required(),
+    name: Joi.string().default("").allow(""),
+    about: Joi.string().allow(""),
+    map: Joi.string().allow(""),
+    event: Joi.string().allow(""),
+    banner: Joi.string().allow(""),
+    options: Joi.array().items(optionSchemaJoi).required(),
   });
 
   return schema.validate(temple);
 };
-
-module.exports.Temple = Temple;
+module.exports.Temple = Temple
 module.exports.validateTemple = validateTemple;

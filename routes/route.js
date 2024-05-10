@@ -32,7 +32,8 @@ router.post("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const fetch = await Temple.find();
+    const fetch = await Temple.find().sort({ id: 1 });
+
 
     if (fetch.length === 0) {
       return res.status(204).send({
@@ -57,7 +58,7 @@ router.get("/:id", async (req, res) => {
   try {
     const id = req.params.id;
 
-    const fetch = await Temple.findById(id);
+    const fetch = await Temple.findOne({ id: id });
 
     if (!fetch) {
       return res.status(404).send({
